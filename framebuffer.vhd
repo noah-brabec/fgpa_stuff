@@ -31,8 +31,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-constant res_x := 640;
-constant res_y := 480;
+constant res_x : natural := 640;
+constant res_y : natural := 480;
+constant color_depth : natural := 8;    -- per-channel color depth
 
 entity Framebuffer is
     Port ( clk          : in std_logic;
@@ -43,18 +44,18 @@ entity Framebuffer is
            read_addr_x  : in natural range 0 to res_x - 1;
            read_addr_y  : in natural range 0 to res_y - 1;
 
-           r_in         : in STD_LOGIC_VECTOR (7 downto 0);
-           g_in         : in STD_LOGIC_VECTOR (7 downto 0);
-           b_in         : in STD_LOGIC_VECTOR (7 downto 0);
-           r_out        : out STD_LOGIC_VECTOR (7 downto 0);
-           g_out        : out STD_LOGIC_VECTOR (7 downto 0);
-           b_out        : out STD_LOGIC_VECTOR (7 downto 0)
+           r_in         : in STD_LOGIC_VECTOR (color_depth - 1 downto 0);
+           g_in         : in STD_LOGIC_VECTOR (color_depth - 1 downto 0);
+           b_in         : in STD_LOGIC_VECTOR (color_depth - 1 downto 0);
+           r_out        : out STD_LOGIC_VECTOR (color_depth - 1 downto 0);
+           g_out        : out STD_LOGIC_VECTOR (color_depth - 1 downto 0);
+           b_out        : out STD_LOGIC_VECTOR (color_depth - 1 downto 0)
            );
 end Framebuffer;
 
 architecture Behavioral of Framebuffer is
 
-    type framebuffer_arr is array (0 to (res_x * res_y) - 1) of STD_LOGIC_VECTOR (23 downto 0);
+    type framebuffer_arr is array (0 to (res_x * res_y) - 1) of STD_LOGIC_VECTOR ((color_depth * 3) - 1 downto 0);
     signal buff         : framebuffer_arr;
     signal write_addr   : natural range 0 to (res_x * res_y) - 1;
     signal read_addr    : natural range 0 to (res_x * res_y) - 1;
@@ -75,8 +76,8 @@ begin
     end process;
 
     -- read out the given pixel
-    r_out <= buff(read_addr)(23 downto 16);
-    g_out <= buff(read_addr)(15 downto 8);
-    b_out <= buff(read_addr)(8  downto 0);
+    r_out <= buff(read_addr)((color_depth * 3) - 1 downto color_depth * 2);
+    g_out <= buff(read_addr)((color_depth * 2) - 1 downto color_depth);
+    b_out <= buff(read_addr)(color_depth - 1 downto 0);
 
 end Behavioral;
