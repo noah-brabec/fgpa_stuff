@@ -31,8 +31,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-constant res_x := 1920;
-constant res_y := 1080;
+constant res_x := 640;
+constant res_y := 480;
 
 entity Framebuffer is
     Port ( clk          : in std_logic;
